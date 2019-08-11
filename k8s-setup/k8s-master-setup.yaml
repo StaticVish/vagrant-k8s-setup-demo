@@ -2,6 +2,13 @@
 - hosts: all
   become: true
   tasks:
+
+  - name: Upgrade all packages to the latest version
+    apt:
+      name: "*"
+      state: latest
+      update_cache: yes
+
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
@@ -77,18 +84,6 @@
         - kubeadm
         - kubectl
 
-  - name: Setup kubelet File if not Present
-    stat:
-      path: /etc/default/kubelet
-    register: kubelet_stats
-
-  - name: Configure node ip
-    lineinfile:
-      dest: /etc/default/kubelet
-      line: KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }}
-      state: present
-    when: kubelet_stats.stat.exists == True
-
   - name: Restart kubelet
     service:
       name: kubelet
@@ -113,8 +108,12 @@
     command: kubeadm token create --print-join-command
     register: join_command
 
+  - name: Print the Join Command to See the content
+    debug:
+      msg: "{{ join_command.stdout_lines[0] }}"
+
   - name: Copy join command to local file
-    become: true
+    become: false
     local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
 
   handlers:

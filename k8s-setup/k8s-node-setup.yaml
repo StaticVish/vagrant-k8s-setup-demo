@@ -2,6 +2,13 @@
 - hosts: all
   become: true
   tasks:
+
+  - name: Upgrade all packages to the latest version
+    apt:
+      name: "*"
+      state: latest
+      update_cache: yes
+
   - name: Install packages that allow apt to be used over HTTPS
     apt:
       name: "{{ packages }}"
@@ -76,18 +83,6 @@
         - kubelet
         - kubeadm
         - kubectl
-
-  - name: Setup kubelet File if not Present
-    stat:
-      path: /etc/default/kubelet
-    register: kubelet_stats
-
-  - name: Configure node ip
-    lineinfile:
-      dest: /etc/default/kubelet
-      line: KUBELET_EXTRA_ARGS=--node-ip={{ node_ip }}
-      state: present
-    when: kubelet_stats.stat.exists == True
 
   - name: Restart kubelet
     service:

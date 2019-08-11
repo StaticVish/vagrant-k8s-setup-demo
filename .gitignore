@@ -10,3 +10,6 @@
 
 ### Vagrant Patch ###
 *.box
+
+
+k8s-setup/join-command

@@ -20,18 +20,19 @@ Vagrant.configure("2") do |config|
       }
     end
   end
-  
+
   (1..N).each do |i|
     config.vm.define "node-#{i}" do |node|
       node.vm.box = OS_IMAGE
       node.vm.network "private_network", ip: "192.168.50.#{i + 10}"
+      node.vm.hostname = "k8s-node-#{i}"
       node.vm.provider :virtualbox do |v|
         v.customize ["modifyvm", :id, "--memory", 1024]
         v.customize ["modifyvm", :id, "--name", "node-#{i}"]
         v.customize ["modifyvm", :id, "--cpus", 2]
       end
       node.vm.provision "ansible" do |ansible|
-        ansible.playbook = "kubernetes-setup/k8s-node-setup.yaml"
+        ansible.playbook = "k8s-setup/k8s-node-setup.yaml"
         ansible.extra_vars = {
           node_ip: "192.168.50.#{i + 10}",
         }
