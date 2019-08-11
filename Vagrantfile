@@ -1,4 +1,4 @@
-OS_IMAGE = "ubuntu/xenial64"
+OS_IMAGE = "ubuntu/bionic64"
 N = 2
 Vagrant.configure("2") do |config|
 
