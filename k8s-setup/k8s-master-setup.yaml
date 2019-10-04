@@ -45,6 +45,10 @@
     notify:
       - docker status
 
+  - name: Reboot the System before proceeding
+    reboot:
+      reboot_timeout: 3600
+
   - name: Add vagrant user to docker group
     user:
       name: vagrant
